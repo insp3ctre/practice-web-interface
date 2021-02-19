@@ -1,7 +1,9 @@
 from flask import Flask
 from flask import request, render_template, redirect
-app = Flask(__name__)
 
+from blt_funcx_toolkit.execution import run_console_cmd
+
+app = Flask(__name__)
 
 @app.route('/')
 def name():
@@ -25,3 +27,14 @@ def text():
 		f.write(message + ", " + name + '\n')
 	f.close()
 	return redirect(f"/")
+
+@app.route('/funcx')
+def console_cmd():
+	blt_output = ""
+	return render_template("blt_template.html", console_cmd=blt_output, location="/blt")
+
+@app.route('/blt', methods=['POST'])
+def blt():
+	cmd = request.form['command']
+	blt_output = run_console_cmd(cmd)
+	return redirect("/funcx")
